@@ -15,7 +15,7 @@ jobs:
     - name: build image
       run: |
         docker build -t spotifytoyoutube:${GITHUB_RUN_NUMBER} .
-        docker tag spotifytoyoutube:${GITHUB_RUN_NUMBER} tunaola/babzmann-deploy:_${GITHUB_RUN_NUMBER}
+        docker tag spotifytoyoutube:${GITHUB_RUN_NUMBER} tunaola/babzmann-deploy:spotifytoyoutube_${GITHUB_RUN_NUMBER}
         docker push tunaola/babzmann-deploy:spotifytoyoutube_${GITHUB_RUN_NUMBER}
 
   pushToECRPublic:
