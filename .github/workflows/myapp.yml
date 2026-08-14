@@ -70,5 +70,49 @@ jobs:
         docker build -t spotifytoyoutube_priv .
         docker tag spotifytoyoutube_priv:latest $ECR_REGISTRY/$ECR_REPOSITORY:${GITHUB_RUN_NUMBER}
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:${GITHUB_RUN_NUMBER}
+on: push
+jobs:
+  PushToDockerHub:
+    runs-on: self-hosted
+    steps:
+    - name: Code Checkout
+      uses: actions/checkout@v4.4.0
+    - name: Docker Login
+      uses: docker/login-action@v4.6.0
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+    - name: build image
+      run: |
+        docker build -t spotifytoyoutube:${GITHUB_RUN_NUMBER} .
+        docker tag spotifytoyoutube:${GITHUB_RUN_NUMBER} tunaola/babzmann-deploy:spotifytoyoutube_${GITHUB_RUN_NUMBER}
+        docker push tunaola/babzmann-deploy:spotifytoyoutube_${GITHUB_RUN_NUMBER}
+
+  DeployToEC2:
+    needs: PushToDockerHub
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy to EC2 via SSH
+      uses: appleboy/ssh-action@v1.2.0
+      
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.EC2_USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        
+        script: |
+          # 1. Pull the specific image version from your Docker Hub repository
+          sudo docker pull tunaola/babzmann-deploy:spotifytoyoutube_${GITHUB_RUN_NUMBER}
+
+          # 2. Stop and remove the older container if it exists
+          sudo docker stop spotifytoyoutube-app || true
+          sudo docker rm spotifytoyoutube-app || true
+
+          # 3. Run the container on your EC2 instance (adjust port mapping -p if needed)
+          sudo docker run -d \
+            --name spotifytoyoutube-app \
+            -p 8000:8000 \
+            --restart always \
+            tunaola/babzmann-deploy:spotifytoyoutube_${GITHUB_RUN_NUMBER}
 
         
