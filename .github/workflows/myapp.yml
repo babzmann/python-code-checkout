@@ -16,5 +16,29 @@ jobs:
       run: |
         docker build -t spotifytoyoutube:${GITHUB_RUN_NUMBER} .
         docker tag spotifytoyoutube:${GITHUB_RUN_NUMBER} tunaola/babzmann-deploy:spotifytoyoutube
-        docker push tunaola/babzmann-deploy:spotifytoyoutube 
+        docker push tunaola/babzmann-deploy:spotifytoyoutube_${GITHUB_RUN_NUMBER}
+
+  pushToECRPublic:
+    needs: PushToDockerHub
+    runs-on: self-hosted
+    steps:
+    
+    - name: LoginToAWS
+      uses: aws-actions/configure-aws-credential@v3
+      with:
+        registry: public.ecr.aws
+        username: ${{ secrets.ACCESS_KEY }} 
+        password: ${{ secrets.SECRET_ACCESS_KEY }}
+      env:
+        aws-region: ${{ secrets.REGION }}
+    - name: Code checkout
+      uses: actions/checkout@v4.4.0
+
+    - name: build image for aws
+      run: |
+        docker build -t spotifytoyoutube_pub .
+        docker tag spotifytoyoutube_pub:latest public.ecr.aws/o8b9t3u4/spotifytoyoutube_pub:${GITHUB_RUN_NUMBER}
+        docker push public.ecr.aws/o8b9t3u4/spotifytoyoutube_pub:${GITHUB_RUN_NUMBER}
+        
+  
         
