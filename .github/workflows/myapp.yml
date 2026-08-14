@@ -41,7 +41,7 @@ jobs:
         docker push public.ecr.aws/o8b9t3u4/spotifytoyoutube_pub:${GITHUB_RUN_NUMBER}
         
   pushToECRPrivate:
-    needs: PushToDockerHub
+    needs: pushToECRPublic
     runs-on: self-hosted
     steps:
     
