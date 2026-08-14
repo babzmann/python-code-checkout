@@ -16,7 +16,7 @@ importlib-resources==3.0.0
 keyring==5.7.1
 markdown2==2.3.9
 ply==3.11
-psycopg2-binary==2.8.5
+psycopg2-binary==2.9.3
 pytz==2020.1
 six==1.15.0
 spotipy==2.13.0
