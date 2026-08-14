@@ -23,8 +23,8 @@ jobs:
     runs-on: self-hosted
     steps:
     
-    - name: LoginToAWS
-      uses: aws-actions/configure-aws-credential@v3
+    - name: LoginToPublicECR
+      uses: docker/login-action@v4.6.0
       with:
         registry: public.ecr.aws
         username: ${{ secrets.ACCESS_KEY }} 
