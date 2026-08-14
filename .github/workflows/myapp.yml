@@ -85,7 +85,7 @@ jobs:
         
         script: |
           # 1. Pull the specific image version from your Docker Hub repository
-          sudo docker pull tunaola/babzmann-deploy:spotifytoyoutube_${GITHUB_RUN_NUMBER}
+          sudo docker pull tunaola/babzmann-deploy:spotifytoyoutube_${{ github.run_number }}
 
           # 2. Stop and remove the older container if it exists
           sudo docker stop spotifytoyoutube-app || true
@@ -96,6 +96,6 @@ jobs:
             --name spotifytoyoutube-app \
             -p 8000:8000 \
             --restart always \
-            tunaola/babzmann-deploy:spotifytoyoutube_${GITHUB_RUN_NUMBER}
+            tunaola/babzmann-deploy:spotifytoyoutube_${{ github.run_number }}
 
         
