@@ -14,9 +14,9 @@ jobs:
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
     - name: build image
       run: |
-        docker build -t spotifytoyoutube:${GITHUB_RUN_NUMBER} .
-        docker tag spotifytoyoutube:${GITHUB_RUN_NUMBER} tunaola/babzmann-deploy:spotifytoyoutube_${GITHUB_RUN_NUMBER}
-        docker push tunaola/babzmann-deploy:spotifytoyoutube_${GITHUB_RUN_NUMBER}
+        docker build -t spotifytoyoutube:${{ github.run_number }} .
+        docker tag spotifytoyoutube:${{ github.run_number }} tunaola/babzmann-deploy:spotifytoyoutube_${{ github.run_number }}
+        docker push tunaola/babzmann-deploy:spotifytoyoutube_${{ github.run_number }}
 
   pushToECRPublic:
     needs: PushToDockerHub
@@ -37,8 +37,8 @@ jobs:
     - name: build and push image for to public ECR
       run: |
         docker build -t spotifytoyoutube_pub .
-        docker tag spotifytoyoutube_pub:latest public.ecr.aws/o8b9t3u4/spotifytoyoutube_pub:${GITHUB_RUN_NUMBER}
-        docker push public.ecr.aws/o8b9t3u4/spotifytoyoutube_pub:${GITHUB_RUN_NUMBER}
+        docker tag spotifytoyoutube_pub:latest public.ecr.aws/o8b9t3u4/spotifytoyoutube_pub:${{ github.run_number }}
+        docker push public.ecr.aws/o8b9t3u4/spotifytoyoutube_pub:${{ github.run_number }}
         
   pushToECRPrivate:
     needs: pushToECRPublic
@@ -68,8 +68,8 @@ jobs:
         ECR_REPOSITORY: spotifytoyoutube_private 
       run: |
         docker build -t spotifytoyoutube_priv .
-        docker tag spotifytoyoutube_priv:latest $ECR_REGISTRY/$ECR_REPOSITORY:${GITHUB_RUN_NUMBER}
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:${GITHUB_RUN_NUMBER}
+        docker tag spotifytoyoutube_priv:latest $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.run_number }}
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.run_number }}
 
   DeployContainerToEC2:
     needs: PushToDockerHub
