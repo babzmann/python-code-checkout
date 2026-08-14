@@ -1,6 +1,6 @@
 name: pythonApp
 
-on: push
+on: push 
 jobs:
   PushToDockerHub:
     runs-on: self-hosted
